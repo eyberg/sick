@@ -1,0 +1,15 @@
+* to have a category bucket for each category + customer_id
+
+* so 160 * 10 == 1600 buckets
+
+* each should be a 'hash' (text) of avail. elements
+
+* should be able to grab from a ruby client via telnet
+
+why another K/V?
+
+  I need O(1) random access but with persistence
+and I wanted complete control on how to get to it.
+
+tests:
+  spec sick_spec.rb

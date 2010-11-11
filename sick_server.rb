@@ -9,6 +9,8 @@ class SIckServer
     self.buckets = {}
     self.logging = logging
 
+    restore_from_disk
+
     log("Starting up server...")
 
     server = TCPServer.new(port)
@@ -39,15 +41,20 @@ class SIckServer
 
   # loads all the buckets into memory
   def restore_from_disk
+    log("Loading Data in...")
 
-    entries = Dir.entries("buckets").collect do |f| f unless f.match("bucket").nil? end.compact
+    if File.directory?('buckets') then
+      entries = Dir.entries("buckets").collect do |f| f unless f.match("bucket").nil? end.compact
 
-    entries.each do |e|
-      File.open(e, 'r') do |f|
-        @contents = f.read
+      entries.each do |e|
+        File.open("buckets/" + e) do |f|
+          @contents = Marshal.load(f)
+        end
+
+        buckets["#{e.gsub(".bucket", "")}"] = @contents
+
       end
 
-      buckets["#{e.gsub(".bucket", "")}"] = @contents
     end
 
   end
@@ -63,7 +70,7 @@ class SIckServer
       puts "filing file"
       # take hash of bucket
       File.open('buckets/' + bucket + ".bucket", 'w') do |f|
-        f.write(buckets["#{bucket}"])
+        Marshal.dump(buckets["#{bucket}"], f)
       end
 
     end
@@ -85,8 +92,15 @@ class SIckServer
       bucket = matches[1]
       key = matches[2]
 
-      value = buckets["#{bucket}"]["#{key}"]
-      session.puts "#{value}\n"
+      begin
+        value = buckets["#{bucket}"]["#{key}"]
+        session.puts "#{value}\n"
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.inspect
+
+        session.puts "FUCK\n"
+      end
 
     when put_reg
       matches = input.match(put_reg)
@@ -94,22 +108,46 @@ class SIckServer
       key = matches[2]
       value = matches[3]
 
-      buckets["#{bucket}"]["#{key}"] = "#{value}"
-      persist(bucket)
+      begin
+        buckets["#{bucket}"]["#{key}"] = "#{value}"
+        persist(bucket)
 
-      session.puts "put received\n"
+        session.puts "put received\n"
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.inspect
+
+        session.puts "FUCK\n"
+      end
+
 
     when create_reg
       matches = input.match(create_reg)
       bucket = matches[1]
-      buckets["#{bucket}"] = {}
-      session.puts "created bucket\n"
+
+      begin
+        buckets["#{bucket}"] = {}
+        session.puts "created bucket\n"
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.inspect
+
+        session.puts "FUCK\n"
+      end
 
     when destroy_reg
       matches = input.match(destroy_reg)
       bucket = matches[1]
-      buckets.delete("#{bucket}")
-      session.puts "destroyed bucket\n"
+
+      begin
+        buckets.delete("#{bucket}")
+        session.puts "destroyed bucket\n"
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.inspect
+
+        session.puts "FUCK\n"
+      end
 
     else
       session.puts "No\n"

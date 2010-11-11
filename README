@@ -12,4 +12,4 @@ why another K/V?
 and I wanted complete control on how to get to it.
 
 tests:
-  spec sick_spec.rb
+  rspec sick_spec.rb

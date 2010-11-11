@@ -35,4 +35,6 @@ describe SIck, "API" do
     retval.should == "destroyed bucket\n"
   end
 
+  it "should kill the server to see if the data has been persisted"
+
 end

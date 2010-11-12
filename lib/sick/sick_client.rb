@@ -40,6 +40,11 @@ class SIck
     send("destroy bucket: #{name}")
   end
 
+  # retrieve count random elements from bucket
+  def random_from(bucket, count)
+    send("rand bucket: #{bucket} count: #{count}")
+  end
+
   # get a ref to a bucket
   def get_bucket(bucket)
   end

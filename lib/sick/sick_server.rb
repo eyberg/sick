@@ -59,6 +59,32 @@ class SIckServer
 
   end
 
+  # grab num random results from bucket
+  def random_from(bucket, num)
+    #ret = {}
+
+    rbucket = buckets["#{bucket}"]
+
+    puts 'pst adsf'
+
+    begin
+
+      ret = rbucket.sort_by{ rand }.slice(0..num).collect { |k,v| { k => v } }
+
+      #num.to_i.times do |i|
+      #  ret[i] = rbucket[rand(rbucket.size)]
+      #end
+
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace.inspect
+      puts "fucking cok ae assoo!!"
+    end
+
+    puts 'zxcv'
+    return ret
+  end
+
   # save to disk
   def persist(bucket)
 
@@ -83,10 +109,30 @@ class SIckServer
     put_reg = /put bucket: (.*), key: (.*), value: (.*)\n/
     create_reg = /create bucket: (.*)/
     destroy_reg = /destroy bucket: (.*)/
+    rand_reg = /rand bucket: (.*) count: (.*)/
 
     log("got the following from the client: #{input}")
 
     case input
+    when rand_reg
+      matches = input.match(rand_reg)
+      bucket = matches[1]
+      count = matches[2]
+
+      begin
+        puts 'got here'
+
+        ret = random_from(bucket, count.to_i)
+
+        puts 'zxcvzxcv'
+        session.puts "#{ret}\n"
+      rescue
+        puts e.message
+        puts e.backtrace.inspect
+  
+        session.puts "FUCK\n"
+      end
+
     when get_reg
       matches = input.match(get_reg)
       bucket = matches[1]

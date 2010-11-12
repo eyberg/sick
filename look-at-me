@@ -1,0 +1,10 @@
+irb(main):055:0> require 'benchmark'
+=> true
+irb(main):056:0> Benchmark.measure { 30.times do |i|
+sick.random_from("shit", 5) end }
+=> #<Benchmark::Tms:0x7f422687e5f0 @cutime=0.0, @total=0.0, @label="",
+@stime=0.0, @real=0.418624877929688, @utime=0.0, @cstime=0.0>
+
+
+if we can convert this to c I think we have a winner winner chicken
+dinner

@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'socket'
+require 'yaml'
 
 class SIckServer
   attr_accessor :buckets
@@ -65,23 +66,15 @@ class SIckServer
 
     rbucket = buckets["#{bucket}"]
 
-    puts 'pst adsf'
-
     begin
 
-      ret = rbucket.sort_by{ rand }.slice(0..num).collect { |k,v| { k => v } }
-
-      #num.to_i.times do |i|
-      #  ret[i] = rbucket[rand(rbucket.size)]
-      #end
+      ret = rbucket.sort_by{ rand }.slice(0..num-1).collect { |k,v| { k => v } }
 
     rescue Exception => e
       puts e.message
       puts e.backtrace.inspect
-      puts "fucking cok ae assoo!!"
     end
 
-    puts 'zxcv'
     return ret
   end
 
@@ -90,10 +83,8 @@ class SIckServer
 
     Thread.new do
 
-      puts "creating buckets dir"
       Dir.mkdir('buckets') unless File.directory?('buckets')
 
-      puts "filing file"
       # take hash of bucket
       File.open('buckets/' + bucket + ".bucket", 'w') do |f|
         Marshal.dump(buckets["#{bucket}"], f)
@@ -120,17 +111,16 @@ class SIckServer
       count = matches[2]
 
       begin
-        puts 'got here'
 
         ret = random_from(bucket, count.to_i)
 
-        puts 'zxcvzxcv'
-        session.puts "#{ret}\n"
+        session.write "#{YAML::dump(ret)}\377"
+        #session.puts "#{Marshal.dump(ret)}\n"
       rescue
         puts e.message
         puts e.backtrace.inspect
   
-        session.puts "FUCK\n"
+        session.puts "FUCK\377"
       end
 
     when get_reg
@@ -140,12 +130,12 @@ class SIckServer
 
       begin
         value = buckets["#{bucket}"]["#{key}"]
-        session.puts "#{value}\n"
+        session.puts "#{value}\377"
       rescue Exception => e
         puts e.message
         puts e.backtrace.inspect
 
-        session.puts "FUCK\n"
+        session.puts "FUCK\377"
       end
 
     when put_reg
@@ -158,12 +148,12 @@ class SIckServer
         buckets["#{bucket}"]["#{key}"] = "#{value}"
         persist(bucket)
 
-        session.puts "put received\n"
+        session.puts "put received\377"
       rescue Exception => e
         puts e.message
         puts e.backtrace.inspect
 
-        session.puts "FUCK\n"
+        session.puts "FUCK\377"
       end
 
 
@@ -173,12 +163,12 @@ class SIckServer
 
       begin
         buckets["#{bucket}"] = {}
-        session.puts "created bucket\n"
+        session.puts "created bucket\377"
       rescue Exception => e
         puts e.message
         puts e.backtrace.inspect
 
-        session.puts "FUCK\n"
+        session.puts "FUCK\377"
       end
 
     when destroy_reg
@@ -187,16 +177,16 @@ class SIckServer
 
       begin
         buckets.delete("#{bucket}")
-        session.puts "destroyed bucket\n"
+        session.puts "destroyed bucket\377"
       rescue Exception => e
         puts e.message
         puts e.backtrace.inspect
 
-        session.puts "FUCK\n"
+        session.puts "FUCK\377"
       end
 
     else
-      session.puts "No\n"
+      session.puts "No\377"
     end
   end
 

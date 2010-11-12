@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'socket'
+require 'yaml'
 
 class SIck
   attr_accessor :clientSession
@@ -11,13 +12,18 @@ class SIck
   def send(msg)
     self.clientSession.puts "#{msg}\n"
 
-    msg = self.clientSession.gets
- 
-    if msg.include?("No")
-      close
+    data = self.clientSession.gets("\377")
+
+    msg = YAML::load(data[0..data.size - 2])
+
+    if msg.class.eql? String then 
+      if msg.include?("No")
+        close
+      end
     end
 
     return msg
+
   end
 
   # get a key from a bucket

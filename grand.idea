@@ -1,0 +1,7 @@
+so the grand idea here is that whenever you insert you request the key
+in your bucket and if it doesn't exist it gets put in
+
+this should work relatively fast for inserts...
+
+as for selects -- you just select each cat by cat_customer_id key
+and you get N random results..

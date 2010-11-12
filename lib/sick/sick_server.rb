@@ -6,6 +6,11 @@ class SIckServer
   attr_accessor :buckets
   attr_accessor :logging
 
+  # set to true if you want to persist
+  def save_on_insert?
+    false
+  end
+
   def initialize(ip, port, logging=:off)
     self.buckets = {}
     self.logging = logging
@@ -146,7 +151,11 @@ class SIckServer
 
       begin
         buckets["#{bucket}"]["#{key}"] = "#{value}"
-        persist(bucket)
+
+        # persist to disk upon each insert
+        if save_on_insert? then
+          persist(bucket)
+        end
 
         session.puts "put received\377"
       rescue Exception => e

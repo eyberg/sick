@@ -3,4 +3,4 @@
 require 'sick'
 
 # change me to :on if you want logging
-sick = SIckServer.new('127.0.0.1', '31337', :on)
+sick = SIckServer.new('127.0.0.1', '31337', :off)

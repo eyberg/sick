@@ -1,0 +1,14 @@
+GET:
+  get bucket: [bucket], key: [key]
+
+PUT:
+  put bucket: [bucket], key: [key], value: [value]
+
+CREATE BUCKET:
+  create bucket: [bucket]
+
+DESTROY BUCKET:
+  destroy bucket: [bucket]
+
+GET RANDOM FROM BUCKET:
+  rand bucket: [bucket] count: [num]

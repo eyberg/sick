@@ -1,15 +1,51 @@
-* to have a category bucket for each category + customer_id
-
-* so 160 * 10 == 1600 buckets
-
-* each should be a 'hash' (text) of avail. elements
-
-* should be able to grab from a ruby client via telnet
-
-why another K/V?
+why yet another K/V?
 
   I need O(1) random access but with persistence
-and I wanted complete control on how to get to it.
+and I wanted complete control on how to get to it -- eg: nothing else
+matched what we needed at the time.
 
-tests:
-  rspec sick_spec.rb
+
+  Right now, this is nothing but a toy but once I re-write it in C we
+will have a lean mean category motherfucking machine. This was mainly to
+get the api worked out before I dedicated some real time to this.
+
+EXAMPLE:
+
+  # start the daemon
+  sick
+
+  # do a client request
+  require 'rubygems'
+  require 'sick'
+
+  sick = SIck.new('127.0.0.1', '31337')
+
+  # create a bucket (category listing) called Services
+  sick.create_bucket("Services")
+
+  # fill it with a bunch of keys (business hashes)
+  100.times do |i| sick.put("stuff", "key" + i.to_s, "val" + (i*3).to_s) end
+
+  # randomly select from it whatever number you want
+  sick.random_from("stuff", 20)
+
+TESTS:
+
+  rake spec
+
+TODO:
+
+  * implement group select: eg: select_random_from(["services", "entertainment", "dining"], 20)
+    return value would be [s, e, d]
+
+  * I think even with ruby we are winning now.... I'll know tmo..
+
+  * if we did c I know we would make vast improvements
+
+  * to have a category bucket for each category + customer_id
+
+  * so 160 * 10 == 1600 buckets
+
+  * each should be a 'hash' (text) of avail. elements
+
+  * should be able to grab from a ruby client via telnet

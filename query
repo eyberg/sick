@@ -1,0 +1,10 @@
+import query:
+
+  for each category
+    find all businesses and do key: value
+
+insert query:
+  grab * adv_src where category_name = ''; and customer_id = '';
+
+find query:
+  sick.get("1_cat_name")

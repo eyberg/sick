@@ -1,0 +1,5 @@
+#!/usr/bin/ruby
+
+require 'sick'
+
+puts "Sick v #{Sick::VERSION}"
